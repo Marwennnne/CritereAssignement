@@ -4,6 +4,7 @@ import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoService } from './todo.service';
 import { FirstPipe } from '../pipes/first.pipe';
 import { TodoEntity } from './entities/todo.entity';
+import { CritereDTO } from './dto/critere.dto';
 
 
 
@@ -12,6 +13,13 @@ export class TodoController {
   constructor(
     private todoService: TodoService
   ) {}
+
+
+
+  @Get('/search')
+  async search( @Body() doc: CritereDTO){
+    return this.todoService.search(doc)
+  }
 
 
   @Get('')

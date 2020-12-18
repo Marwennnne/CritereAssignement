@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { Todo } from './models/todo.model';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { Repository } from 'typeorm';
+import { Equal, Like, Repository } from 'typeorm';
 import { TodoEntity } from './entities/todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CritereDTO } from './dto/critere.dto';
 
 @Injectable()
 export class TodoService {
@@ -20,6 +21,25 @@ export class TodoService {
       todo
     ];
   }
+
+  async search(critereDoc: CritereDTO){
+    try{
+    const todos = this.TodoRepository.find({
+      description:Like(`%${critereDoc.chaine}%`),
+      status:Equal(critereDoc.statut)
+      })
+    if(!todos[0]){
+        throw new HttpException('Not Found',404);
+    }
+    return todos[0];
+    } catch (error){
+      throw new HttpException(error.message,500)
+    }
+  }
+
+
+
+
   private findFakeTodoById(id: string): Todo {
     const todo = this.todos.find(
       (actualTodo) => {
